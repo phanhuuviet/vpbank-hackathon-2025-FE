@@ -1,21 +1,25 @@
-"use client"
+"use client";
 
-import type { Customer } from "@/types"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { X, User, Calendar, Link, Database } from "lucide-react"
-import { formatDistanceToNow } from "date-fns"
+import type { Customer } from "@/types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { X, User, Calendar, Link, Database } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 
 interface CustomerProfileProps {
-  customer: Customer
-  isOpen: boolean
-  onClose: () => void
+  customer: Customer;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export function CustomerProfile({ customer, isOpen, onClose }: CustomerProfileProps) {
-  if (!isOpen) return null
+export function CustomerProfile({
+  customer,
+  isOpen,
+  onClose,
+}: CustomerProfileProps) {
+  if (!isOpen) return null;
 
   return (
     <div className="w-80 bg-white border-l border-gray-200 flex flex-col">
@@ -59,12 +63,16 @@ export function CustomerProfile({ customer, isOpen, onClose }: CustomerProfilePr
             <div className="space-y-3">
               <div>
                 <p className="text-sm font-medium text-gray-500">Facebook ID</p>
-                <p className="text-sm text-gray-900 font-mono">{customer.fb_id}</p>
+                <p className="text-sm text-gray-900 font-mono">
+                  {customer.fb_id}
+                </p>
               </div>
 
               {customer.fb_dob && (
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Date of Birth</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    Date of Birth
+                  </p>
                   <p className="text-sm text-gray-900">{customer.fb_dob}</p>
                 </div>
               )}
@@ -83,8 +91,14 @@ export function CustomerProfile({ customer, isOpen, onClose }: CustomerProfilePr
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-500">Database Link</p>
-                <Button variant="outline" size="sm" className="w-full justify-start bg-transparent">
+                <p className="text-sm font-medium text-gray-500">
+                  Database Link
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full justify-start bg-transparent"
+                >
                   <Link className="h-4 w-4 mr-2" />
                   View in Database
                 </Button>
@@ -105,7 +119,9 @@ export function CustomerProfile({ customer, isOpen, onClose }: CustomerProfilePr
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Last Message</span>
-                <span className="font-medium">{formatDistanceToNow(new Date(), { addSuffix: true })}</span>
+                <span className="font-medium">
+                  {formatDistanceToNow(new Date(), { addSuffix: true })}
+                </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Total Messages</span>
@@ -114,7 +130,10 @@ export function CustomerProfile({ customer, isOpen, onClose }: CustomerProfilePr
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">First Contact</span>
                 <span className="font-medium">
-                  {formatDistanceToNow(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), { addSuffix: true })}
+                  {formatDistanceToNow(
+                    new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+                    { addSuffix: true }
+                  )}
                 </span>
               </div>
             </div>
@@ -128,11 +147,12 @@ export function CustomerProfile({ customer, isOpen, onClose }: CustomerProfilePr
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-600">
-              No notes available for this customer. Add notes to keep track of important information.
+              No notes available for this customer. Add notes to keep track of
+              important information.
             </p>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }

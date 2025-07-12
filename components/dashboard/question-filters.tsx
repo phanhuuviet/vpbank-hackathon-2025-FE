@@ -1,25 +1,34 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import type { CustomerType, QuestionStatus } from "@/types"
-import { Filter, Search } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import type { CustomerType, QuestionStatus } from "@/types";
+import { Filter, Search } from "lucide-react";
 
 interface QuestionFiltersProps {
   filters: {
-    customerType: CustomerType | "all"
-    status: QuestionStatus | "all"
-    search: string
-  }
-  onFiltersChange: (filters: any) => void
+    customerType: CustomerType | "all";
+    status: QuestionStatus | "all";
+    search: string;
+  };
+  onFiltersChange: (filters: any) => void;
 }
 
-export function QuestionFilters({ filters, onFiltersChange }: QuestionFiltersProps) {
+export function QuestionFilters({
+  filters,
+  onFiltersChange,
+}: QuestionFiltersProps) {
   const updateFilter = (key: string, value: string) => {
-    onFiltersChange({ ...filters, [key]: value })
-  }
+    onFiltersChange({ ...filters, [key]: value });
+  };
 
   return (
     <Card>
@@ -46,7 +55,10 @@ export function QuestionFilters({ filters, onFiltersChange }: QuestionFiltersPro
 
         <div className="space-y-2">
           <Label htmlFor="customer-type">Customer Type</Label>
-          <Select value={filters.customerType} onValueChange={(value) => updateFilter("customerType", value)}>
+          <Select
+            value={filters.customerType}
+            onValueChange={(value) => updateFilter("customerType", value)}
+          >
             <SelectTrigger>
               <SelectValue placeholder="All types" />
             </SelectTrigger>
@@ -55,7 +67,9 @@ export function QuestionFilters({ filters, onFiltersChange }: QuestionFiltersPro
               <SelectItem value="Individual">Individual</SelectItem>
               <SelectItem value="SME">SME</SelectItem>
               <SelectItem value="Corporate">Corporate</SelectItem>
-              <SelectItem value="Business Household">Business Household</SelectItem>
+              <SelectItem value="Business Household">
+                Business Household
+              </SelectItem>
               <SelectItem value="Partner">Partner</SelectItem>
             </SelectContent>
           </Select>
@@ -63,7 +77,10 @@ export function QuestionFilters({ filters, onFiltersChange }: QuestionFiltersPro
 
         <div className="space-y-2">
           <Label htmlFor="status">Status</Label>
-          <Select value={filters.status} onValueChange={(value) => updateFilter("status", value)}>
+          <Select
+            value={filters.status}
+            onValueChange={(value) => updateFilter("status", value)}
+          >
             <SelectTrigger>
               <SelectValue placeholder="All statuses" />
             </SelectTrigger>
@@ -77,5 +94,5 @@ export function QuestionFilters({ filters, onFiltersChange }: QuestionFiltersPro
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

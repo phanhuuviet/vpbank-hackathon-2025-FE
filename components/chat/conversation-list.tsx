@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import type { Conversation } from "@/types"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Search, MessageSquare, Wifi, WifiOff } from "lucide-react"
-import { formatDistanceToNow } from "date-fns"
-import { useState } from "react"
-import { cn } from "@/lib/utils"
+import type { Conversation } from "@/types";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Search, MessageSquare, Wifi, WifiOff } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface ConversationListProps {
-  conversations: Conversation[]
-  selectedConversation: Conversation | null
-  onConversationSelect: (conversation: Conversation) => void
-  loading: boolean
-  isConnected: boolean
+  conversations: Conversation[];
+  selectedConversation: Conversation | null;
+  onConversationSelect: (conversation: Conversation) => void;
+  loading: boolean;
+  isConnected: boolean;
 }
 
 export function ConversationList({
@@ -25,11 +25,13 @@ export function ConversationList({
   loading,
   isConnected,
 }: ConversationListProps) {
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState("");
 
   const filteredConversations = conversations.filter((conversation) =>
-    conversation.customerObject.fb_name.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+    conversation.customerObject.fb_name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
+  );
 
   if (loading) {
     return (
@@ -49,7 +51,7 @@ export function ConversationList({
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -59,8 +61,15 @@ export function ConversationList({
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold text-gray-900">Conversations</h2>
           <div className="flex items-center space-x-1">
-            {isConnected ? <Wifi className="h-4 w-4 text-green-500" /> : <WifiOff className="h-4 w-4 text-red-500" />}
-            <Badge variant={isConnected ? "default" : "destructive"} className="text-xs">
+            {isConnected ? (
+              <Wifi className="h-4 w-4 text-green-500" />
+            ) : (
+              <WifiOff className="h-4 w-4 text-red-500" />
+            )}
+            <Badge
+              variant={isConnected ? "default" : "destructive"}
+              className="text-xs"
+            >
               {isConnected ? "Live" : "Offline"}
             </Badge>
           </div>
@@ -83,9 +92,13 @@ export function ConversationList({
         {filteredConversations.length === 0 ? (
           <div className="p-8 text-center">
             <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No conversations</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No conversations
+            </h3>
             <p className="text-gray-500 text-sm">
-              {searchQuery ? "No conversations match your search." : "New conversations will appear here."}
+              {searchQuery
+                ? "No conversations match your search."
+                : "New conversations will appear here."}
             </p>
           </div>
         ) : (
@@ -96,13 +109,18 @@ export function ConversationList({
                 variant="ghost"
                 className={cn(
                   "w-full p-3 h-auto justify-start mb-2 text-left",
-                  selectedConversation?.id === conversation.id && "bg-blue-50 border-blue-200",
+                  selectedConversation?.id === conversation.id &&
+                    "bg-blue-50 border-blue-200"
                 )}
                 onClick={() => onConversationSelect(conversation)}
               >
                 <div className="flex items-center space-x-3 w-full min-w-0">
                   <Avatar className="h-10 w-10 flex-shrink-0">
-                    <AvatarImage src={conversation.customerObject.fb_avt || "/placeholder.svg"} />
+                    <AvatarImage
+                      src={
+                        conversation.customerObject.fb_avt || "/placeholder.svg"
+                      }
+                    />
                     <AvatarFallback className="text-xs">
                       {conversation.customerObject.fb_name
                         .split(" ")
@@ -116,10 +134,14 @@ export function ConversationList({
                         {conversation.customerObject.fb_name}
                       </h3>
                       <span className="text-xs text-gray-500 flex-shrink-0">
-                        {formatDistanceToNow(new Date(conversation.updatedAt), { addSuffix: true })}
+                        {formatDistanceToNow(new Date(conversation.updatedAt), {
+                          addSuffix: true,
+                        })}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-600 truncate mb-2 pr-2">{conversation.lastMessage}</p>
+                    <p className="text-xs text-gray-600 truncate mb-2 pr-2">
+                      {conversation.lastMessage}
+                    </p>
                     <div className="flex items-center justify-between">
                       <Badge variant="outline" className="text-xs">
                         {conversation.customerObject.customer_type || "Unknown"}
@@ -138,5 +160,5 @@ export function ConversationList({
         )}
       </div>
     </div>
-  )
+  );
 }

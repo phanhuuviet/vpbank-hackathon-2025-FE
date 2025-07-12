@@ -1,29 +1,29 @@
-"use client"
+"use client";
 
-import { useAuth } from "@/contexts/auth-context"
-import { useSocket } from "@/contexts/socket-context"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { useAuth } from "@/contexts/auth-context";
+import { useSocket } from "@/contexts/socket-context";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu"
-import { Building2, User, Settings, LogOut, Wifi, WifiOff } from "lucide-react"
-import { useRouter } from "next/navigation"
+} from "@/components/ui/dropdown-menu";
+import { Building2, User, Settings, LogOut, Wifi, WifiOff } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function DashboardHeader() {
-  const { user, logout } = useAuth()
-  const { isConnected } = useSocket()
-  const router = useRouter()
+  const { user, logout } = useAuth();
+  const { isConnected } = useSocket();
+  const router = useRouter();
 
   const handleLogout = () => {
-    logout()
-    router.push("/")
-  }
+    logout();
+    router.push("/");
+  };
 
   return (
     <header className="bg-white shadow-sm border-b">
@@ -32,7 +32,9 @@ export function DashboardHeader() {
           <div className="flex items-center">
             <Building2 className="h-8 w-8 text-blue-600 mr-3" />
             <div>
-              <h1 className="text-xl font-semibold text-gray-900">VPBank Reviewer</h1>
+              <h1 className="text-xl font-semibold text-gray-900">
+                VPBank Reviewer
+              </h1>
               <p className="text-sm text-gray-500">Facebook Agent Platform</p>
             </div>
           </div>
@@ -43,14 +45,20 @@ export function DashboardHeader() {
               {isConnected ? (
                 <>
                   <Wifi className="h-4 w-4 text-green-500" />
-                  <Badge variant="secondary" className="bg-green-100 text-green-800">
+                  <Badge
+                    variant="secondary"
+                    className="bg-green-100 text-green-800"
+                  >
                     Connected
                   </Badge>
                 </>
               ) : (
                 <>
                   <WifiOff className="h-4 w-4 text-red-500" />
-                  <Badge variant="secondary" className="bg-red-100 text-red-800">
+                  <Badge
+                    variant="secondary"
+                    className="bg-red-100 text-red-800"
+                  >
                     Disconnected
                   </Badge>
                 </>
@@ -95,5 +103,5 @@ export function DashboardHeader() {
         </div>
       </div>
     </header>
-  )
+  );
 }

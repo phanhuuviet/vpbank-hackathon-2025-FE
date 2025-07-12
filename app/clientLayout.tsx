@@ -1,30 +1,30 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { Inter } from "next/font/google"
-import "./globals.css"
-import { AuthProvider } from "@/contexts/auth-context"
-import { SocketProvider } from "@/contexts/socket-context"
-import { Toaster } from "@/components/ui/toaster"
-import { ProtectedRoute } from "@/components/protected-route"
-import { Sidebar } from "@/components/layout/sidebar"
-import { Header } from "@/components/layout/header"
-import { useAuth } from "@/contexts/auth-context"
-import { usePathname } from "next/navigation"
-import { PreferencesProvider } from "@/contexts/preferences-context"
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { AuthProvider } from "@/contexts/auth-context";
+import { SocketProvider } from "@/contexts/socket-context";
+import { Toaster } from "@/components/ui/toaster";
+import { ProtectedRoute } from "@/components/protected-route";
+import { Sidebar } from "@/components/layout/sidebar";
+import { Header } from "@/components/layout/header";
+import { useAuth } from "@/contexts/auth-context";
+import { usePathname } from "next/navigation";
+import { PreferencesProvider } from "@/contexts/preferences-context";
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"] });
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth()
-  const pathname = usePathname()
+  const { user } = useAuth();
+  const pathname = usePathname();
 
-  const publicRoutes = ["/", "/login"]
-  const isPublicRoute = publicRoutes.includes(pathname)
+  const publicRoutes = ["/", "/login"];
+  const isPublicRoute = publicRoutes.includes(pathname);
 
   if (isPublicRoute || !user) {
-    return <>{children}</>
+    return <>{children}</>;
   }
 
   return (
@@ -35,13 +35,13 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         <main className="flex-1 overflow-hidden">{children}</main>
       </div>
     </div>
-  )
+  );
 }
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
@@ -58,5 +58,5 @@ export default function RootLayout({
         </AuthProvider>
       </body>
     </html>
-  )
+  );
 }

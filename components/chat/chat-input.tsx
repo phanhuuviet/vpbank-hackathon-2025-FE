@@ -1,42 +1,51 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Send, ChevronDown, MessageSquare, StickyNote } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Send, ChevronDown, MessageSquare, StickyNote } from "lucide-react";
 
 interface ChatInputProps {
-  onSendMessage: (content: string) => void
-  onAddNote: (content: string) => void
-  disabled?: boolean
+  onSendMessage: (content: string) => void;
+  onAddNote: (content: string) => void;
+  disabled?: boolean;
 }
 
-export function ChatInput({ onSendMessage, onAddNote, disabled }: ChatInputProps) {
-  const [input, setInput] = useState("")
-  const [mode, setMode] = useState<"message" | "note">("message")
+export function ChatInput({
+  onSendMessage,
+  onAddNote,
+  disabled,
+}: ChatInputProps) {
+  const [input, setInput] = useState("");
+  const [mode, setMode] = useState<"message" | "note">("message");
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!input.trim() || disabled) return
+    e.preventDefault();
+    if (!input.trim() || disabled) return;
 
     if (mode === "message") {
-      onSendMessage(input.trim())
+      onSendMessage(input.trim());
     } else {
-      onAddNote(input.trim())
+      onAddNote(input.trim());
     }
 
-    setInput("")
-  }
+    setInput("");
+  };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSubmit(e)
+      e.preventDefault();
+      handleSubmit(e);
     }
-  }
+  };
 
   return (
     <div className="border-t bg-white p-4">
@@ -89,5 +98,5 @@ export function ChatInput({ onSendMessage, onAddNote, disabled }: ChatInputProps
         </div>
       </form>
     </div>
-  )
+  );
 }

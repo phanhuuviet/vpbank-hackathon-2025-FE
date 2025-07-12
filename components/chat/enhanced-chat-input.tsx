@@ -1,116 +1,141 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState, useRef, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
-import { usePreferences } from "@/contexts/preferences-context"
-import { Send, ChevronDown, MessageSquare, StickyNote, Zap } from "lucide-react"
+import type React from "react";
+import { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { usePreferences } from "@/contexts/preferences-context";
+import {
+  Send,
+  ChevronDown,
+  MessageSquare,
+  StickyNote,
+  Zap,
+} from "lucide-react";
 
 interface EnhancedChatInputProps {
-  onSendMessage: (content: string) => void
-  onAddNote: (content: string) => void
-  disabled?: boolean
+  onSendMessage: (content: string) => void;
+  onAddNote: (content: string) => void;
+  disabled?: boolean;
 }
 
-export function EnhancedChatInput({ onSendMessage, onAddNote, disabled }: EnhancedChatInputProps) {
-  const [input, setInput] = useState("")
-  const [mode, setMode] = useState<"message" | "note">("message")
-  const [showSuggestions, setShowSuggestions] = useState(false)
-  const [suggestions, setSuggestions] = useState<Array<{ shortcut: string; message: string }>>([])
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const { quickReplies, getQuickReplyByShortcut } = usePreferences()
+export function EnhancedChatInput({
+  onSendMessage,
+  onAddNote,
+  disabled,
+}: EnhancedChatInputProps) {
+  const [input, setInput] = useState("");
+  const [mode, setMode] = useState<"message" | "note">("message");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState<
+    Array<{ shortcut: string; message: string }>
+  >([]);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { quickReplies, getQuickReplyByShortcut } = usePreferences();
 
   useEffect(() => {
     // Check for quick reply shortcuts
-    const words = input.split(" ")
-    const lastWord = words[words.length - 1]
+    const words = input.split(" ");
+    const lastWord = words[words.length - 1];
 
     if (lastWord.startsWith("/") && lastWord.length > 1) {
       const matchingReplies = quickReplies.filter((reply) =>
-        reply.shortcut.toLowerCase().includes(lastWord.toLowerCase()),
-      )
+        reply.shortcut.toLowerCase().includes(lastWord.toLowerCase())
+      );
       if (matchingReplies.length > 0) {
-        setSuggestions(matchingReplies.map((reply) => ({ shortcut: reply.shortcut, message: reply.message })))
-        setShowSuggestions(true)
+        setSuggestions(
+          matchingReplies.map((reply) => ({
+            shortcut: reply.shortcut,
+            message: reply.message,
+          }))
+        );
+        setShowSuggestions(true);
       } else {
-        setShowSuggestions(false)
+        setShowSuggestions(false);
       }
     } else {
-      setShowSuggestions(false)
+      setShowSuggestions(false);
     }
-  }, [input, quickReplies])
+  }, [input, quickReplies]);
 
   const expandQuickReply = (text: string) => {
-    const words = text.split(" ")
+    const words = text.split(" ");
     const expandedWords = words.map((word) => {
       if (word.startsWith("/")) {
-        const quickReply = getQuickReplyByShortcut(word)
+        const quickReply = getQuickReplyByShortcut(word);
         if (quickReply) {
           // Replace variables with mock data
-          return quickReply.message.replace(/#FIRST_NAME/g, "Customer").replace(/#PAGE_NAME/g, "VPBank Official")
+          return quickReply.message
+            .replace(/#FIRST_NAME/g, "Customer")
+            .replace(/#PAGE_NAME/g, "VPBank Official");
         }
       }
-      return word
-    })
-    return expandedWords.join(" ")
-  }
+      return word;
+    });
+    return expandedWords.join(" ");
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!input.trim() || disabled) return
+    e.preventDefault();
+    if (!input.trim() || disabled) return;
 
-    const expandedInput = expandQuickReply(input.trim())
+    const expandedInput = expandQuickReply(input.trim());
 
     if (mode === "message") {
-      onSendMessage(expandedInput)
+      onSendMessage(expandedInput);
     } else {
-      onAddNote(expandedInput)
+      onAddNote(expandedInput);
     }
 
-    setInput("")
-    setShowSuggestions(false)
-  }
+    setInput("");
+    setShowSuggestions(false);
+  };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSubmit(e)
+      e.preventDefault();
+      handleSubmit(e);
     } else if (e.key === " ") {
       // Auto-expand shortcuts on space
-      const words = input.split(" ")
-      const lastWord = words[words.length - 1]
+      const words = input.split(" ");
+      const lastWord = words[words.length - 1];
       if (lastWord.startsWith("/")) {
-        const quickReply = getQuickReplyByShortcut(lastWord)
+        const quickReply = getQuickReplyByShortcut(lastWord);
         if (quickReply) {
           const expandedMessage = quickReply.message
             .replace(/#FIRST_NAME/g, "Customer")
-            .replace(/#PAGE_NAME/g, "VPBank Official")
-          const newInput = [...words.slice(0, -1), expandedMessage].join(" ") + " "
-          setInput(newInput)
-          setShowSuggestions(false)
-          e.preventDefault()
+            .replace(/#PAGE_NAME/g, "VPBank Official");
+          const newInput =
+            [...words.slice(0, -1), expandedMessage].join(" ") + " ";
+          setInput(newInput);
+          setShowSuggestions(false);
+          e.preventDefault();
         }
       }
     }
-  }
+  };
 
   const handleSuggestionClick = (shortcut: string) => {
-    const words = input.split(" ")
-    const lastWordIndex = words.length - 1
-    const quickReply = getQuickReplyByShortcut(shortcut)
+    const words = input.split(" ");
+    const lastWordIndex = words.length - 1;
+    const quickReply = getQuickReplyByShortcut(shortcut);
     if (quickReply) {
       const expandedMessage = quickReply.message
         .replace(/#FIRST_NAME/g, "Customer")
-        .replace(/#PAGE_NAME/g, "VPBank Official")
-      words[lastWordIndex] = expandedMessage
-      setInput(words.join(" ") + " ")
-      setShowSuggestions(false)
-      textareaRef.current?.focus()
+        .replace(/#PAGE_NAME/g, "VPBank Official");
+      words[lastWordIndex] = expandedMessage;
+      setInput(words.join(" ") + " ");
+      setShowSuggestions(false);
+      textareaRef.current?.focus();
     }
-  }
+  };
 
   return (
     <div className="border-t bg-white p-4">
@@ -120,7 +145,9 @@ export function EnhancedChatInput({ onSendMessage, onAddNote, disabled }: Enhanc
           <div className="bg-gray-50 border rounded-lg p-2 space-y-1">
             <div className="flex items-center space-x-2 mb-2">
               <Zap className="h-4 w-4 text-blue-500" />
-              <span className="text-xs font-medium text-gray-700">Quick Replies</span>
+              <span className="text-xs font-medium text-gray-700">
+                Quick Replies
+              </span>
             </div>
             {suggestions.slice(0, 3).map((suggestion) => (
               <button
@@ -134,7 +161,9 @@ export function EnhancedChatInput({ onSendMessage, onAddNote, disabled }: Enhanc
                     {suggestion.shortcut}
                   </Badge>
                 </div>
-                <p className="text-xs text-gray-600 truncate">{suggestion.message}</p>
+                <p className="text-xs text-gray-600 truncate">
+                  {suggestion.message}
+                </p>
               </button>
             ))}
           </div>
@@ -191,5 +220,5 @@ export function EnhancedChatInput({ onSendMessage, onAddNote, disabled }: Enhanc
         </div>
       </form>
     </div>
-  )
+  );
 }

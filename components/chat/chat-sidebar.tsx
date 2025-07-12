@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import type { Question, Note } from "@/types"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import { X, User, MessageSquare, StickyNote, Plus } from "lucide-react"
-import { formatDistanceToNow } from "date-fns"
-import { useState } from "react"
+import type { Question, Note } from "@/types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { X, User, MessageSquare, StickyNote, Plus } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { useState } from "react";
 
 interface ChatSidebarProps {
-  question: Question
-  notes: Note[]
-  isOpen: boolean
-  onClose: () => void
-  onAddNote: (content: string) => void
+  question: Question;
+  notes: Note[];
+  isOpen: boolean;
+  onClose: () => void;
+  onAddNote: (content: string) => void;
 }
 
 const customerTypeColors = {
@@ -23,21 +23,27 @@ const customerTypeColors = {
   Corporate: "bg-blue-100 text-blue-800",
   "Business Household": "bg-green-100 text-green-800",
   Partner: "bg-red-100 text-red-800",
-}
+};
 
-export function ChatSidebar({ question, notes, isOpen, onClose, onAddNote }: ChatSidebarProps) {
-  const [newNote, setNewNote] = useState("")
-  const [isAddingNote, setIsAddingNote] = useState(false)
+export function ChatSidebar({
+  question,
+  notes,
+  isOpen,
+  onClose,
+  onAddNote,
+}: ChatSidebarProps) {
+  const [newNote, setNewNote] = useState("");
+  const [isAddingNote, setIsAddingNote] = useState(false);
 
   const handleAddNote = () => {
-    if (!newNote.trim()) return
+    if (!newNote.trim()) return;
 
-    onAddNote(newNote.trim())
-    setNewNote("")
-    setIsAddingNote(false)
-  }
+    onAddNote(newNote.trim());
+    setNewNote("");
+    setIsAddingNote(false);
+  };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="w-80 bg-gray-50 border-l flex flex-col">
@@ -68,13 +74,18 @@ export function ChatSidebar({ question, notes, isOpen, onClose, onAddNote }: Cha
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">Type</p>
-              <Badge variant="secondary" className={customerTypeColors[question.customerType]}>
+              <Badge
+                variant="secondary"
+                className={customerTypeColors[question.customerType]}
+              >
                 {question.customerType}
               </Badge>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">Customer ID</p>
-              <p className="text-sm text-gray-900 font-mono">{question.customerId}</p>
+              <p className="text-sm text-gray-900 font-mono">
+                {question.customerId}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -90,18 +101,24 @@ export function ChatSidebar({ question, notes, isOpen, onClose, onAddNote }: Cha
           <CardContent className="space-y-3">
             <div className="flex justify-between">
               <span className="text-sm text-gray-500">Messages</span>
-              <span className="text-sm font-medium">{question.messageCount}</span>
+              <span className="text-sm font-medium">
+                {question.messageCount}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-gray-500">Created</span>
               <span className="text-sm font-medium">
-                {formatDistanceToNow(new Date(question.createdAt), { addSuffix: true })}
+                {formatDistanceToNow(new Date(question.createdAt), {
+                  addSuffix: true,
+                })}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-gray-500">Last Update</span>
               <span className="text-sm font-medium">
-                {formatDistanceToNow(new Date(question.updatedAt), { addSuffix: true })}
+                {formatDistanceToNow(new Date(question.updatedAt), {
+                  addSuffix: true,
+                })}
               </span>
             </div>
           </CardContent>
@@ -115,7 +132,11 @@ export function ChatSidebar({ question, notes, isOpen, onClose, onAddNote }: Cha
                 <StickyNote className="h-4 w-4 mr-2" />
                 Internal Notes ({notes.length})
               </CardTitle>
-              <Button variant="ghost" size="sm" onClick={() => setIsAddingNote(true)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsAddingNote(true)}
+              >
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
@@ -137,8 +158,8 @@ export function ChatSidebar({ question, notes, isOpen, onClose, onAddNote }: Cha
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      setIsAddingNote(false)
-                      setNewNote("")
+                      setIsAddingNote(false);
+                      setNewNote("");
                     }}
                   >
                     Cancel
@@ -154,11 +175,18 @@ export function ChatSidebar({ question, notes, isOpen, onClose, onAddNote }: Cha
             ) : (
               <div className="space-y-3">
                 {notes.map((note) => (
-                  <div key={note.id} className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <div
+                    key={note.id}
+                    className="bg-yellow-50 border border-yellow-200 rounded-lg p-3"
+                  >
                     <p className="text-sm text-gray-700 mb-2">{note.content}</p>
                     <div className="flex items-center justify-between text-xs text-gray-500">
                       <span>{note.reviewerName}</span>
-                      <span>{formatDistanceToNow(new Date(note.createdAt), { addSuffix: true })}</span>
+                      <span>
+                        {formatDistanceToNow(new Date(note.createdAt), {
+                          addSuffix: true,
+                        })}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -168,5 +196,5 @@ export function ChatSidebar({ question, notes, isOpen, onClose, onAddNote }: Cha
         </Card>
       </div>
     </div>
-  )
+  );
 }

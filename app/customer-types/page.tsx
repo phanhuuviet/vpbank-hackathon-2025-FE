@@ -1,116 +1,138 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { userApi } from "@/lib/api"
-import { toast } from "@/hooks/use-toast"
-import type { User } from "@/types"
-import { Users, Save } from "lucide-react"
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { userApi } from "@/lib/api";
+import { toast } from "@/hooks/use-toast";
+import type { User } from "@/types";
+import { Users, Save } from "lucide-react";
 
 const CUSTOMER_TYPES = [
   { key: "cn", label: "CN", description: "Cá nhân (Individual)" },
   { key: "dn", label: "DN", description: "Doanh nghiệp (Enterprise)" },
-  { key: "hkd", label: "HKD", description: "Hộ kinh doanh (Business Household)" },
+  {
+    key: "hkd",
+    label: "HKD",
+    description: "Hộ kinh doanh (Business Household)",
+  },
   { key: "dt", label: "DT", description: "Đối tác (Partner)" },
-]
+];
 
 export default function CustomerTypesPage() {
-  const [users, setUsers] = useState<User[]>([])
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState<string | null>(null)
-  const [changes, setChanges] = useState<Record<string, string[]>>({})
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState<string | null>(null);
+  const [changes, setChanges] = useState<Record<string, string[]>>({});
 
   useEffect(() => {
-    loadUsers()
-  }, [])
+    loadUsers();
+  }, []);
 
   const loadUsers = async () => {
     try {
-      setLoading(true)
-      const data = await userApi.getListUser()
-      setUsers(data)
+      setLoading(true);
+      const data = await userApi.getListUser();
+      setUsers(data);
     } catch (error) {
-      console.error("Failed to load users:", error)
+      console.error("Failed to load users:", error);
       toast({
         title: "Error",
         description: "Failed to load users",
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const handleCustomerTypeChange = (userId: string, customerType: string, checked: boolean) => {
-    const currentTypes = changes[userId] || users.find((u) => u.id === userId)?.customer_types || []
+  const handleCustomerTypeChange = (
+    userId: string,
+    customerType: string,
+    checked: boolean
+  ) => {
+    const currentTypes =
+      changes[userId] ||
+      users.find((u) => u.id === userId)?.customer_types ||
+      [];
 
-    let newTypes: string[]
+    let newTypes: string[];
     if (checked) {
-      newTypes = [...currentTypes.filter((t) => t !== customerType), customerType]
+      newTypes = [
+        ...currentTypes.filter((t) => t !== customerType),
+        customerType,
+      ];
     } else {
-      newTypes = currentTypes.filter((t) => t !== customerType)
+      newTypes = currentTypes.filter((t) => t !== customerType);
     }
 
     setChanges((prev) => ({
       ...prev,
       [userId]: newTypes,
-    }))
-  }
+    }));
+  };
 
   const handleSaveCustomerTypes = async (userId: string) => {
-    const newCustomerTypes = changes[userId]
-    if (!newCustomerTypes) return
+    const newCustomerTypes = changes[userId];
+    if (!newCustomerTypes) return;
 
     try {
-      setSaving(userId)
-      await userApi.setCustomerTypes(userId, newCustomerTypes)
+      setSaving(userId);
+      await userApi.setCustomerTypes(userId, newCustomerTypes);
 
       // Update local state
       setUsers((prev) =>
-        prev.map((user) => (user.id === userId ? { ...user, customer_types: newCustomerTypes } : user)),
-      )
+        prev.map((user) =>
+          user.id === userId
+            ? { ...user, customer_types: newCustomerTypes }
+            : user
+        )
+      );
 
       // Clear changes for this user
       setChanges((prev) => {
-        const updated = { ...prev }
-        delete updated[userId]
-        return updated
-      })
+        const updated = { ...prev };
+        delete updated[userId];
+        return updated;
+      });
 
       toast({
         title: "Success",
         description: "Customer types updated successfully",
-      })
+      });
     } catch (error) {
-      console.error("Failed to update customer types:", error)
+      console.error("Failed to update customer types:", error);
       toast({
         title: "Error",
         description: "Failed to update customer types",
         variant: "destructive",
-      })
+      });
     } finally {
-      setSaving(null)
+      setSaving(null);
     }
-  }
+  };
 
   const getUserCustomerTypes = (userId: string) => {
-    return changes[userId] || users.find((u) => u.id === userId)?.customer_types || []
-  }
+    return (
+      changes[userId] ||
+      users.find((u) => u.id === userId)?.customer_types ||
+      []
+    );
+  };
 
   const hasChanges = (userId: string) => {
-    return changes[userId] !== undefined
-  }
+    return changes[userId] !== undefined;
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -121,7 +143,9 @@ export default function CustomerTypesPage() {
             <Users className="h-8 w-8 mr-3 text-blue-600" />
             Customer Segment Assignment
           </h1>
-          <p className="text-gray-600 mt-2">Manage user assignments to customer segments</p>
+          <p className="text-gray-600 mt-2">
+            Manage user assignments to customer segments
+          </p>
         </div>
 
         <Card>
@@ -133,29 +157,40 @@ export default function CustomerTypesPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">User</th>
+                    <th className="text-left py-3 px-4 font-medium text-gray-900">
+                      User
+                    </th>
                     {CUSTOMER_TYPES.map((type) => (
-                      <th key={type.key} className="text-center py-3 px-4 font-medium text-gray-900">
+                      <th
+                        key={type.key}
+                        className="text-center py-3 px-4 font-medium text-gray-900"
+                      >
                         <div className="flex flex-col items-center">
                           <span>{type.label}</span>
-                          <span className="text-xs text-gray-500 font-normal">{type.description}</span>
+                          <span className="text-xs text-gray-500 font-normal">
+                            {type.description}
+                          </span>
                         </div>
                       </th>
                     ))}
-                    <th className="text-center py-3 px-4 font-medium text-gray-900">Actions</th>
+                    <th className="text-center py-3 px-4 font-medium text-gray-900">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {users.map((user) => {
-                    const userCustomerTypes = getUserCustomerTypes(user.id)
-                    const userHasChanges = hasChanges(user.id)
+                    const userCustomerTypes = getUserCustomerTypes(user.id);
+                    const userHasChanges = hasChanges(user.id);
 
                     return (
                       <tr key={user.id} className="border-b hover:bg-gray-50">
                         <td className="py-4 px-4">
                           <div className="flex items-center space-x-3">
                             <Avatar className="h-10 w-10">
-                              <AvatarImage src={user.avt || "/placeholder.svg"} />
+                              <AvatarImage
+                                src={user.avt || "/placeholder.svg"}
+                              />
                               <AvatarFallback>
                                 {user.fullName
                                   ?.split(" ")
@@ -164,8 +199,12 @@ export default function CustomerTypesPage() {
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <p className="font-medium text-gray-900">{user.fullName}</p>
-                              <p className="text-sm text-gray-500">@{user.username}</p>
+                              <p className="font-medium text-gray-900">
+                                {user.fullName}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                @{user.username}
+                              </p>
                             </div>
                           </div>
                         </td>
@@ -174,7 +213,11 @@ export default function CustomerTypesPage() {
                             <Checkbox
                               checked={userCustomerTypes.includes(type.key)}
                               onCheckedChange={(checked) =>
-                                handleCustomerTypeChange(user.id, type.key, checked as boolean)
+                                handleCustomerTypeChange(
+                                  user.id,
+                                  type.key,
+                                  checked as boolean
+                                )
                               }
                             />
                           </td>
@@ -203,7 +246,7 @@ export default function CustomerTypesPage() {
                           </div>
                         </td>
                       </tr>
-                    )
+                    );
                   })}
                 </tbody>
               </table>
@@ -212,5 +255,5 @@ export default function CustomerTypesPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

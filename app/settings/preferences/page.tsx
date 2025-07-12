@@ -1,73 +1,84 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { usePreferences } from "@/contexts/preferences-context"
-import { toast } from "@/hooks/use-toast"
-import { Settings, Bell, MessageSquare, Volume2, Eye, SkipForward, CheckCircle, Save } from "lucide-react"
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { usePreferences } from "@/contexts/preferences-context";
+import { toast } from "@/hooks/use-toast";
+import {
+  Settings,
+  Bell,
+  MessageSquare,
+  Volume2,
+  Eye,
+  SkipForward,
+  CheckCircle,
+  Save,
+} from "lucide-react";
 
 export default function PreferencesPage() {
-  const { preferences, updatePreferences, loading } = usePreferences()
-  const [saving, setSaving] = useState(false)
-  const [localPreferences, setLocalPreferences] = useState(preferences)
+  const { preferences, updatePreferences, loading } = usePreferences();
+  const [saving, setSaving] = useState(false);
+  const [localPreferences, setLocalPreferences] = useState(preferences);
 
   const handleSave = async () => {
-    if (!localPreferences) return
+    if (!localPreferences) return;
 
     try {
-      setSaving(true)
-      await updatePreferences(localPreferences)
+      setSaving(true);
+      await updatePreferences(localPreferences);
       toast({
         title: "Success",
         description: "Preferences saved successfully",
-      })
+      });
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to save preferences",
         variant: "destructive",
-      })
+      });
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const updateLocalPreference = (path: string, value: boolean) => {
-    if (!localPreferences) return
+    if (!localPreferences) return;
 
-    const keys = path.split(".")
-    const updated = { ...localPreferences }
-    let current: any = updated
+    const keys = path.split(".");
+    const updated = { ...localPreferences };
+    let current: any = updated;
 
     for (let i = 0; i < keys.length - 1; i++) {
-      current = current[keys[i]]
+      current = current[keys[i]];
     }
-    current[keys[keys.length - 1]] = value
+    current[keys[keys.length - 1]] = value;
 
-    setLocalPreferences(updated)
-  }
+    setLocalPreferences(updated);
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
-    )
+    );
   }
 
   if (!localPreferences) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-semibold text-gray-900">Failed to load preferences</h2>
+          <h2 className="text-2xl font-semibold text-gray-900">
+            Failed to load preferences
+          </h2>
           <p className="text-gray-600 mt-2">Please try refreshing the page.</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -78,7 +89,9 @@ export default function PreferencesPage() {
             <Settings className="h-8 w-8 mr-3 text-blue-600" />
             User Preferences
           </h1>
-          <p className="text-gray-600 mt-2">Customize your chat experience and notification settings</p>
+          <p className="text-gray-600 mt-2">
+            Customize your chat experience and notification settings
+          </p>
         </div>
 
         <div className="space-y-6">
@@ -95,12 +108,15 @@ export default function PreferencesPage() {
                 <div className="space-y-0.5">
                   <Label className="text-base">Browser Notifications</Label>
                   <p className="text-sm text-gray-500">
-                    Receive desktop notifications for new messages when the app is in the background
+                    Receive desktop notifications for new messages when the app
+                    is in the background
                   </p>
                 </div>
                 <Switch
                   checked={localPreferences.notifications.browser}
-                  onCheckedChange={(checked) => updateLocalPreference("notifications.browser", checked)}
+                  onCheckedChange={(checked) =>
+                    updateLocalPreference("notifications.browser", checked)
+                  }
                 />
               </div>
 
@@ -111,12 +127,16 @@ export default function PreferencesPage() {
                   <Volume2 className="h-4 w-4 mr-2 text-gray-500" />
                   <div>
                     <Label className="text-base">Message Sounds</Label>
-                    <p className="text-sm text-gray-500">Play sound notifications for incoming messages</p>
+                    <p className="text-sm text-gray-500">
+                      Play sound notifications for incoming messages
+                    </p>
                   </div>
                 </div>
                 <Switch
                   checked={localPreferences.notifications.sound}
-                  onCheckedChange={(checked) => updateLocalPreference("notifications.sound", checked)}
+                  onCheckedChange={(checked) =>
+                    updateLocalPreference("notifications.sound", checked)
+                  }
                 />
               </div>
             </CardContent>
@@ -135,15 +155,20 @@ export default function PreferencesPage() {
                 <div className="space-y-0.5 flex items-center">
                   <Eye className="h-4 w-4 mr-2 text-gray-500" />
                   <div>
-                    <Label className="text-base">Auto-prioritize Unread Conversations</Label>
+                    <Label className="text-base">
+                      Auto-prioritize Unread Conversations
+                    </Label>
                     <p className="text-sm text-gray-500">
-                      Automatically move unread conversations to the top of the list
+                      Automatically move unread conversations to the top of the
+                      list
                     </p>
                   </div>
                 </div>
                 <Switch
                   checked={localPreferences.chat.autoPrioritizeUnread}
-                  onCheckedChange={(checked) => updateLocalPreference("chat.autoPrioritizeUnread", checked)}
+                  onCheckedChange={(checked) =>
+                    updateLocalPreference("chat.autoPrioritizeUnread", checked)
+                  }
                 />
               </div>
 
@@ -155,13 +180,16 @@ export default function PreferencesPage() {
                   <div>
                     <Label className="text-base">Skip to Next Unread</Label>
                     <p className="text-sm text-gray-500">
-                      Automatically jump to the next unread conversation after reading one
+                      Automatically jump to the next unread conversation after
+                      reading one
                     </p>
                   </div>
                 </div>
                 <Switch
                   checked={localPreferences.chat.skipToNextUnread}
-                  onCheckedChange={(checked) => updateLocalPreference("chat.skipToNextUnread", checked)}
+                  onCheckedChange={(checked) =>
+                    updateLocalPreference("chat.skipToNextUnread", checked)
+                  }
                 />
               </div>
 
@@ -171,15 +199,23 @@ export default function PreferencesPage() {
                 <div className="space-y-0.5 flex items-center">
                   <CheckCircle className="h-4 w-4 mr-2 text-gray-500" />
                   <div>
-                    <Label className="text-base">Show Conversation Status</Label>
+                    <Label className="text-base">
+                      Show Conversation Status
+                    </Label>
                     <p className="text-sm text-gray-500">
-                      Display conversation status indicators (in-progress, resolved)
+                      Display conversation status indicators (in-progress,
+                      resolved)
                     </p>
                   </div>
                 </div>
                 <Switch
                   checked={localPreferences.chat.showConversationStatus}
-                  onCheckedChange={(checked) => updateLocalPreference("chat.showConversationStatus", checked)}
+                  onCheckedChange={(checked) =>
+                    updateLocalPreference(
+                      "chat.showConversationStatus",
+                      checked
+                    )
+                  }
                 />
               </div>
             </CardContent>
@@ -201,5 +237,5 @@ export default function PreferencesPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -12,6 +12,7 @@ import { useEffect, useState } from "react"
 import type { Message } from "@/types"
 import { toast } from "@/hooks/use-toast"
 
+// Component này không còn được sử dụng nữa :)))
 export default function ChatPage() {
   const params = useParams()
   const router = useRouter()

@@ -1,35 +1,37 @@
-"use client"
+"use client";
 
-import { useAuth } from "@/contexts/auth-context"
-import { useSocket } from "@/contexts/socket-context"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+import { useAuth } from "@/contexts/auth-context";
+import { useSocket } from "@/contexts/socket-context";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { User, Settings, LogOut, Wifi, WifiOff } from "lucide-react"
-import { useRouter } from "next/navigation"
+} from "@/components/ui/dropdown-menu";
+import { User, Settings, LogOut, Wifi, WifiOff } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function Header() {
-  const { user, logout } = useAuth()
-  const { isConnected } = useSocket()
-  const router = useRouter()
+  const { user, logout } = useAuth();
+  const { isConnected } = useSocket();
+  const router = useRouter();
 
   const handleLogout = () => {
-    logout()
-    router.push("/")
-  }
+    logout();
+    router.push("/");
+  };
 
   return (
     <header className="bg-white border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <h2 className="text-xl font-semibold text-gray-900">Welcome back, {user?.fullName}</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            Welcome back, {user?.fullName}
+          </h2>
         </div>
 
         <div className="flex items-center space-x-4">
@@ -38,7 +40,10 @@ export function Header() {
             {isConnected ? (
               <>
                 <Wifi className="h-4 w-4 text-green-500" />
-                <Badge variant="secondary" className="bg-green-100 text-green-800">
+                <Badge
+                  variant="secondary"
+                  className="bg-green-100 text-green-800"
+                >
                   Connected
                 </Badge>
               </>
@@ -90,5 +95,5 @@ export function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }

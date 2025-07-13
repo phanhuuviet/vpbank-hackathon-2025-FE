@@ -19,7 +19,7 @@ export function useFacebookSDK(appId: string) {
         appId,
         cookie: true,
         xfbml: true,
-        version: "v19.0",
+        version: "v23.0",
       });
     };
 

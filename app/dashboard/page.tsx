@@ -37,7 +37,7 @@ export default function DashboardPage() {
   const [facebookPages, setFacebookPages] = useState([]);
   const { user } = useAuth();
   const router = useRouter();
-  useFacebookSDK("320824421732965");
+  useFacebookSDK(process.env.NEXT_PUBLIC_APP_FB_ID);
 
   const mockFacebookPages = [
     {

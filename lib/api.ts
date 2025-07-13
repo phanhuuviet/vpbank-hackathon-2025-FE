@@ -9,7 +9,8 @@ import type {
 
 // Create axios instance with interceptors
 const api = axios.create({
-  baseURL: "/api",
+  baseURL:
+    process.env.NEXT_PUBLIC_REACT_BASE_URL || "http://localhost:3000/api",
   timeout: 10000,
 });
 

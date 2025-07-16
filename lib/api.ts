@@ -43,13 +43,13 @@ api.interceptors.response.use(
           return axios.request(error.config);
         } catch (refreshError) {
           // Refresh failed, redirect to login
-          localStorage.removeItem("auth_token");
-          localStorage.removeItem("refresh_token");
-          window.location.href = "/login";
+          // localStorage.removeItem("auth_token");
+          // localStorage.removeItem("refresh_token");
+          // window.location.href = "/login";
         }
       } else {
-        localStorage.removeItem("auth_token");
-        window.location.href = "/login";
+        // localStorage.removeItem("auth_token");
+        // window.location.href = "/login";
       }
     }
     return Promise.reject(error);
@@ -164,78 +164,71 @@ const mockMessages: Message[] = [
 
 // Auth API
 export const authApi = {
-  login: async (username: string, password: string): Promise<LoginResponse> => {
+  login: async (username: string, password: string) => {
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const response = await api.post("https://api.actvn.live/api/auth/login", {
+      username,
+      password,
+    });
 
-    const user = mockUsers.find((u) => u.username === username);
-    if (
-      !user ||
-      (password !== "password" &&
-        !(username === "admin" && password === "admin123"))
-    ) {
-      throw new Error("Invalid credentials");
+    return response;
+  },
+
+  getUserData: async () => {
+    const response = await api.get("/users/get-info");
+    return response.data.data;
+  },
+
+  updateProfileById: async (userId: string, updates: Partial<User>) => {
+    const response = await api.put(`/users/${userId}/profile`, updates);
+    if (response.status !== 200) {
+      throw new Error("Failed to update profile");
     }
-
-    return {
-      status: "success",
-      message: "Login successful",
-      data: {
-        id: user.id,
-        token: "mock-jwt-token",
-        refreshToken: "mock-refresh-token",
-        permissions: user.permissions,
-      },
-    };
+    return response.data.data;
   },
 
-  getUserData: async (userId: string): Promise<User> => {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    const user = mockUsers.find((u) => u.id === userId);
-    if (!user) throw new Error("User not found");
-    return user;
-  },
-
-  updateProfile: async (
-    userId: string,
-    updates: Partial<User>
-  ): Promise<User> => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    const userIndex = mockUsers.findIndex((u) => u.id === userId);
-    if (userIndex === -1) throw new Error("User not found");
-
-    mockUsers[userIndex] = { ...mockUsers[userIndex], ...updates };
-    return mockUsers[userIndex];
+  updateProfile: async (updates: Partial<User>) => {
+    const response = await api.post("/users/update-info", updates);
+    if (response.status !== 200 && response.status !== 201) {
+      throw new Error("Failed to update profile");
+    }
+    return response.data.data;
   },
 };
 
 // User API
 export const userApi = {
-  getListUser: async (): Promise<User[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return mockUsers;
+  getListUser: async () => {
+    // await new Promise((resolve) => setTimeout(resolve, 500));
+    // return mockUsers;
+    const response = await api.get("/users/list");
+    return response.data.data.users;
   },
 
   setPermission: async (
     userId: string,
     permissions: string[]
   ): Promise<void> => {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    const userIndex = mockUsers.findIndex((u) => u.id === userId);
-    if (userIndex !== -1) {
-      mockUsers[userIndex].permissions = permissions;
+    const response = await api.put(`/users/${userId}/permissions`, {
+      permissions,
+    });
+    if (response.status !== 200) {
+      throw new Error("Failed to update permissions");
     }
+    return response.data;
   },
 
   setCustomerTypes: async (
     userId: string,
     customerTypes: string[]
   ): Promise<void> => {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    const userIndex = mockUsers.findIndex((u) => u.id === userId);
-    if (userIndex !== -1) {
-      mockUsers[userIndex].customer_types = customerTypes;
+    const response = await api.put(`/users/${userId}/customer-types`, {
+      customerTypes: customerTypes,
+    });
+    if (response.status !== 200) {
+      throw new Error("Failed to update customer types");
     }
+    return response.data;
   },
 
   updateUser: async (userId: string, updates: Partial<User>): Promise<User> => {
@@ -245,6 +238,14 @@ export const userApi = {
 
     mockUsers[userIndex] = { ...mockUsers[userIndex], ...updates };
     return mockUsers[userIndex];
+  },
+
+  updateProfileById: async (userId: string, updates: Partial<User>) => {
+    const response = await api.put(`/users/${userId}/profile`, updates);
+    if (response.status !== 200) {
+      throw new Error("Failed to update profile");
+    }
+    return response.data.data;
   },
 
   createUser: async (userData: Partial<User>): Promise<User> => {

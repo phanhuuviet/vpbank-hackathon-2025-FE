@@ -15,6 +15,7 @@ import {
   Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PERMISSIONS_ENUM } from "@/constants";
 
 const navigationItems = [
   {
@@ -27,31 +28,31 @@ const navigationItems = [
     name: "Chat System",
     href: "/chat",
     icon: MessageSquare,
-    permission: "chat",
+    permission: PERMISSIONS_ENUM.CHAT,
   },
   {
     name: "User Management",
     href: "/users",
     icon: Users,
-    permission: "permission",
+    permission: PERMISSIONS_ENUM.PERMISSION_MANAGEMENT,
   },
   {
     name: "Permissions",
     href: "/permissions",
     icon: Shield,
-    permission: "permission",
+    permission: PERMISSIONS_ENUM.PERMISSION_MANAGEMENT,
   },
   {
     name: "Customer Types",
     href: "/customer-types",
     icon: Settings,
-    permission: "customer_type",
+    permission: PERMISSIONS_ENUM.CUSTOMER_TYPE,
   },
   {
     name: "Knowledge Base",
     href: "/knowledge-base",
     icon: Database,
-    permission: "kd",
+    permission: PERMISSIONS_ENUM.KNOWLEDGE_BASE,
   },
 ];
 

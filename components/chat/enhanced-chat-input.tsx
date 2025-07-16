@@ -24,12 +24,14 @@ interface EnhancedChatInputProps {
   onSendMessage: (content: string) => void;
   onAddNote: (content: string) => void;
   disabled?: boolean;
+  selectedCustomer;
 }
 
 export function EnhancedChatInput({
   onSendMessage,
   onAddNote,
   disabled,
+  selectedCustomer,
 }: EnhancedChatInputProps) {
   const [input, setInput] = useState("");
   const [mode, setMode] = useState<"message" | "note">("message");
@@ -73,7 +75,7 @@ export function EnhancedChatInput({
         if (quickReply) {
           // Replace variables with mock data
           return quickReply.message
-            .replace(/#FIRST_NAME/g, "Customer")
+            .replace(/#FIRST_NAME/g, selectedCustomer?.first_name || "Customer")
             .replace(/#PAGE_NAME/g, "VPBank Official");
         }
       }

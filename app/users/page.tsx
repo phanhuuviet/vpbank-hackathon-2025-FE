@@ -70,8 +70,8 @@ export default function UsersPage() {
     setFormData({
       username: user.username,
       fullName: user.fullName || "",
-      dob: user.dob || "",
-      gender: user.gender || "",
+      dob: user.dob || new Date().toISOString().split("T")[0],
+      gender: user.gender || "male",
       address: user.address || "",
       permissions: user.permissions || [],
       customer_types: user.customer_types || [],
@@ -96,8 +96,13 @@ export default function UsersPage() {
   const handleSave = async () => {
     try {
       if (editingUser) {
-        // Update existing user
-        await userApi.updateUser(editingUser.id, formData);
+        const convertData = {
+          fullName: formData.fullName || "",
+          address: formData.address || "",
+          dateOfBirth: formData.dob || new Date().toISOString().split("T")[0],
+          gender: formData.gender || "male",
+        };
+        await userApi.updateProfileById(editingUser.id, convertData);
         setUsers((prev) =>
           prev.map((user) =>
             user.id === editingUser.id ? { ...user, ...formData } : user

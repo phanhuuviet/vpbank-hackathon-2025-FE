@@ -166,6 +166,7 @@ export default function ChatPage() {
             onShowCustomerProfile={() =>
               handleShowCustomerProfile(selectedConversation.customerObject.id)
             }
+            selectedCustomer={selectedCustomer}
           />
         ) : (
           <div className="flex-1 flex items-center justify-center">

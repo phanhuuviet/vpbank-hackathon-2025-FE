@@ -10,16 +10,16 @@ import { userApi } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import type { User } from "@/types";
 import { Users, Save } from "lucide-react";
-
+//individual, business, household_business. partner
 const CUSTOMER_TYPES = [
-  { key: "cn", label: "CN", description: "Cá nhân (Individual)" },
-  { key: "dn", label: "DN", description: "Doanh nghiệp (Enterprise)" },
+  { key: "individual", label: "CN", description: "Cá nhân (Individual)" },
+  { key: "business", label: "DN", description: "Doanh nghiệp (Enterprise)" },
   {
-    key: "hkd",
+    key: "household_business",
     label: "HKD",
     description: "Hộ kinh doanh (Business Household)",
   },
-  { key: "dt", label: "DT", description: "Đối tác (Partner)" },
+  { key: "partner", label: "DT", description: "Đối tác (Partner)" },
 ];
 
 export default function CustomerTypesPage() {

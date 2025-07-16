@@ -24,16 +24,22 @@ export default function ProfilePage() {
   const [formData, setFormData] = useState({
     username: user?.username || "",
     fullName: user?.fullName || "",
-    dob: user?.dob || "",
-    gender: user?.gender || "",
-    address: user?.address || "",
+    dob: user?.dob || new Date().toISOString().split("T")[0],
+    gender: user?.gender || "male",
+    address: user?.address || "Ha Noi, Viet Nam",
   });
   const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
     try {
       setSaving(true);
-      await updateProfile(formData);
+      const convertData = {
+        fullName: formData.fullName,
+        address: formData.address,
+        dateOfBirth: formData.dob,
+        gender: formData.gender,
+      };
+      await updateProfile(convertData);
       setIsEditing(false);
       toast({
         title: "Success",
@@ -61,7 +67,7 @@ export default function ProfilePage() {
     });
     setIsEditing(false);
   };
-
+  console.log("formData", formData);
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

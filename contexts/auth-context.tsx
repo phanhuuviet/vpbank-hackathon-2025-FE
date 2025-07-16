@@ -15,32 +15,30 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
   updateProfile: (updates: Partial<User>) => Promise<void>;
+  updateProfileById: (updates: Partial<User>) => Promise<void>;
   loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const getUserData = async () => {
+    try {
+      const response = await authApi.getUserData();
+      setUser(response);
+      return response;
+    } catch (error) {
+      throw new Error("Failed to fetch user data");
+    }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
     if (token) {
-      // Simulate token validation and user data retrieval
-      const mockUser: User = {
-        id: "1",
-        username: "admin",
-        fullName: "Administrator",
-        avt: "",
-        permissions: ["chat", "kd", "permission", "customer_type"],
-        customer_types: ["cn", "dn", "hkd", "dt"],
-        dob: "1990-01-01",
-        gender: "male",
-        address: "Ho Chi Minh City, Vietnam",
-        settings: {},
-      };
-      setUser(mockUser);
+      getUserData();
     }
     setLoading(false);
   }, []);
@@ -49,11 +47,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await authApi.login(username, password);
 
-      localStorage.setItem("auth_token", response.data.token);
-      localStorage.setItem("refresh_token", response.data.refreshToken);
+      localStorage.setItem("auth_token", response.data.data.accessToken);
+      localStorage.setItem("refresh_token", response.data.data.refreshToken);
 
-      // Fetch user data based on the response
-      const userData = await authApi.getUserData(response.data.id);
+      const userData = await authApi.getUserData();
       setUser(userData);
     } catch (error) {
       throw new Error("Invalid credentials");
@@ -66,12 +63,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
-  const updateProfile = async (updates: Partial<User>) => {
+  const updateProfileById = async (updates: Partial<User>) => {
     if (!user) return;
 
     try {
-      const updatedUser = await authApi.updateProfile(user.id, updates);
+      const updatedUser = await authApi.updateProfileById(user.id, updates);
       setUser(updatedUser);
+    } catch (error) {
+      throw new Error("Failed to update profile");
+    }
+  };
+
+  const updateProfile = async (updates: Partial<User>) => {
+    try {
+      await authApi.updateProfile(updates);
     } catch (error) {
       throw new Error("Failed to update profile");
     }
@@ -79,7 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, updateProfile, loading }}
+      value={{ user, login, logout, updateProfile, updateProfileById, loading }}
     >
       {children}
     </AuthContext.Provider>

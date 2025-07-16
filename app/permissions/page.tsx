@@ -10,25 +10,26 @@ import { userApi } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 import type { User } from "@/types";
 import { Shield, Save } from "lucide-react";
+import { PERMISSIONS_ENUM } from "@/constants";
 
 const PERMISSIONS = [
   {
-    key: "chat",
+    key: PERMISSIONS_ENUM.CHAT,
     label: "Chat System",
     description: "Access to chat and messaging features",
   },
   {
-    key: "kd",
+    key: PERMISSIONS_ENUM.KNOWLEDGE_BASE,
     label: "Knowledge Base",
     description: "Manage knowledge base content",
   },
   {
-    key: "permission",
+    key: PERMISSIONS_ENUM.PERMISSION_MANAGEMENT,
     label: "Permission Management",
     description: "Manage user permissions",
   },
   {
-    key: "customer_type",
+    key: PERMISSIONS_ENUM.CUSTOMER_TYPE,
     label: "Customer Types",
     description: "Manage customer segment assignments",
   },

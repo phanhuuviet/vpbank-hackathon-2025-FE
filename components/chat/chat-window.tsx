@@ -17,6 +17,7 @@ interface ChatWindowProps {
   messages: Message[];
   onSendMessage: (content: string) => void;
   onShowCustomerProfile: () => void;
+  selectedCustomer;
 }
 
 export function ChatWindow({
@@ -24,6 +25,7 @@ export function ChatWindow({
   messages,
   onSendMessage,
   onShowCustomerProfile,
+  selectedCustomer,
 }: ChatWindowProps) {
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -169,6 +171,7 @@ export function ChatWindow({
           onSendMessage={onSendMessage}
           onAddNote={() => {}} // Add note functionality if needed
           disabled={false}
+          selectedCustomer
         />
       </div>
     </div>

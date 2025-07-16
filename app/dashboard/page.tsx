@@ -29,6 +29,7 @@ import {
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "@/hooks/use-toast";
 import { useFacebookSDK } from "@/hooks/use-facebook-sdk";
+import { PERMISSIONS_ENUM } from "@/constants";
 
 export default function DashboardPage() {
   const [isConnecting, setIsConnecting] = useState(false);
@@ -156,7 +157,7 @@ export default function DashboardPage() {
       icon: MessageSquare,
       color: "text-blue-600",
       bgColor: "bg-blue-100",
-      permission: "chat",
+      permission: PERMISSIONS_ENUM.CHAT,
       path: "/chat",
     },
     {
@@ -165,7 +166,7 @@ export default function DashboardPage() {
       icon: Users,
       color: "text-green-600",
       bgColor: "bg-green-100",
-      permission: "permission",
+      permission: PERMISSIONS_ENUM.PERMISSION_MANAGEMENT,
       path: "/users",
     },
     {
@@ -174,7 +175,7 @@ export default function DashboardPage() {
       icon: Shield,
       color: "text-purple-600",
       bgColor: "bg-purple-100",
-      permission: "permission",
+      permission: PERMISSIONS_ENUM.PERMISSION_MANAGEMENT,
       path: "/permissions",
     },
     {
@@ -183,7 +184,7 @@ export default function DashboardPage() {
       icon: Settings,
       color: "text-orange-600",
       bgColor: "bg-orange-100",
-      permission: "customer_type",
+      permission: PERMISSIONS_ENUM.CUSTOMER_TYPE,
       path: "/customer-types",
     },
     {
@@ -192,11 +193,11 @@ export default function DashboardPage() {
       icon: Database,
       color: "text-red-600",
       bgColor: "bg-red-100",
-      permission: "kd",
+      permission: PERMISSIONS_ENUM.KNOWLEDGE_BASE,
       path: "/knowledge-base",
     },
   ];
-
+  console.log("user", user);
   const availableActions = quickActions.filter((action) =>
     user?.permissions.includes(action.permission)
   );

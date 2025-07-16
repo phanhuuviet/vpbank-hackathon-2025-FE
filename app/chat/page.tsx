@@ -7,8 +7,11 @@ import { ChatWindow } from "@/components/chat/chat-window";
 import { CustomerProfile } from "@/components/chat/customer-profile";
 import { chatApi } from "@/lib/api";
 import type { Conversation, Message, Customer } from "@/types";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function ChatPage() {
+  const { user } = useAuth();
+
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] =
     useState<Conversation | null>(null);
@@ -97,7 +100,7 @@ export default function ChatPage() {
 
     const messageData = {
       conversation_id: selectedConversation.id,
-      sender_id: "reviewer_1", // This should come from auth context
+      sender_id: user.id, // This should come from auth context
       content,
     };
 
@@ -106,7 +109,7 @@ export default function ChatPage() {
     // Optimistically add message to UI
     const newMessage: Message = {
       id: Date.now().toString(),
-      sender_id: "reviewer_1",
+      sender_id: user.id,
       sender_type: "user",
       content,
       conversation_id: selectedConversation.id,

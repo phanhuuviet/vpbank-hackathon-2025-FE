@@ -24,7 +24,7 @@ export default function ProfilePage() {
   const [formData, setFormData] = useState({
     username: user?.username || "",
     fullName: user?.fullName || "",
-    dob: user?.dob || new Date().toISOString().split("T")[0],
+    dateOfBirth: user?.dateOfBirth || new Date().toISOString().split("T")[0],
     gender: user?.gender || "male",
     address: user?.address || "Ha Noi, Viet Nam",
   });
@@ -36,7 +36,7 @@ export default function ProfilePage() {
       const convertData = {
         fullName: formData.fullName,
         address: formData.address,
-        dateOfBirth: formData.dob,
+        dateOfBirth: formData.dateOfBirth,
         gender: formData.gender,
       };
       await updateProfile(convertData);
@@ -61,7 +61,7 @@ export default function ProfilePage() {
     setFormData({
       username: user?.username || "",
       fullName: user?.fullName || "",
-      dob: user?.dob || "",
+      dateOfBirth: user?.dateOfBirth || "",
       gender: user?.gender || "",
       address: user?.address || "",
     });
@@ -203,7 +203,7 @@ export default function ProfilePage() {
                     <Input
                       id="dob"
                       type="date"
-                      value={formData.dob}
+                      value={formData.dateOfBirth}
                       onChange={(e) =>
                         setFormData((prev) => ({
                           ...prev,

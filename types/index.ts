@@ -1,13 +1,15 @@
 export interface User {
   id: string;
+  email?: string;
   username: string;
   fullName: string;
   avt: string;
   permissions: string[];
   customer_types: string[];
-  dob?: string;
+  dateOfBirth?: string;
   gender?: string;
   address?: string;
+  phone?: string;
   settings: Record<string, any>;
 }
 

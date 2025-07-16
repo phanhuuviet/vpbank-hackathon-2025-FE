@@ -65,7 +65,7 @@ const mockUsers: User[] = [
     avt: "",
     permissions: ["chat", "kd", "permission", "customer_type"],
     customer_types: ["cn", "dn", "hkd", "dt"],
-    dob: "1990-01-01",
+    dateOfBirth: "1990-01-01",
     gender: "male",
     address: "Ho Chi Minh City, Vietnam",
     settings: {},
@@ -77,7 +77,7 @@ const mockUsers: User[] = [
     avt: "",
     permissions: ["chat"],
     customer_types: ["cn", "dn"],
-    dob: "1985-05-15",
+    dateOfBirth: "1985-05-15",
     gender: "male",
     address: "Hanoi, Vietnam",
     settings: {},
@@ -89,7 +89,7 @@ const mockUsers: User[] = [
     avt: "",
     permissions: ["chat", "kd"],
     customer_types: ["cn"],
-    dob: "1992-08-20",
+    dateOfBirth: "1992-08-20",
     gender: "female",
     address: "Da Nang, Vietnam",
     settings: {},
@@ -166,7 +166,7 @@ const mockMessages: Message[] = [
 export const authApi = {
   login: async (username: string, password: string) => {
     // Simulate API call
-    const response = await api.post("https://api.actvn.live/api/auth/login", {
+    const response = await api.post("/auth/login", {
       username,
       password,
     });
@@ -199,8 +199,6 @@ export const authApi = {
 // User API
 export const userApi = {
   getListUser: async () => {
-    // await new Promise((resolve) => setTimeout(resolve, 500));
-    // return mockUsers;
     const response = await api.get("/users/list");
     return response.data.data.users;
   },
@@ -248,30 +246,20 @@ export const userApi = {
     return response.data.data;
   },
 
-  createUser: async (userData: Partial<User>): Promise<User> => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    const newUser: User = {
-      id: Date.now().toString(),
-      username: userData.username || "",
-      fullName: userData.fullName || "",
-      avt: "",
-      permissions: userData.permissions || [],
-      customer_types: userData.customer_types || [],
-      dob: userData.dob,
-      gender: userData.gender,
-      address: userData.address,
-      settings: {},
-    };
-    mockUsers.push(newUser);
-    return newUser;
+  createUser: async (userData: Partial<User>) => {
+    const response = await api.post("/users/create", userData);
+    if (response.status !== 201) {
+      throw new Error("Failed to create user");
+    }
+    return response.data.data;
   },
 
   deleteUser: async (userId: string): Promise<void> => {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    const userIndex = mockUsers.findIndex((u) => u.id === userId);
-    if (userIndex !== -1) {
-      mockUsers.splice(userIndex, 1);
+    const response = await api.delete(`/users/${userId}`);
+    if (response.status !== 200) {
+      throw new Error("Failed to delete user");
     }
+    return response.data;
   },
 };
 

@@ -138,24 +138,6 @@ export default function LoginPage() {
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
-
-            {/* Demo Credentials */}
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm font-medium text-gray-700 mb-2">
-                Demo Credentials:
-              </p>
-              <div className="text-sm text-gray-600 space-y-1">
-                <p>
-                  <strong>Admin:</strong> admin / admin123
-                </p>
-                <p>
-                  <strong>Reviewer:</strong> reviewer1 / password
-                </p>
-                <p>
-                  <strong>Limited User:</strong> user1 / password
-                </p>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>

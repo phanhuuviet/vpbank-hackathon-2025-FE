@@ -35,11 +35,13 @@ export default function UsersPage() {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
+    email: "",
     username: "",
     fullName: "",
-    dob: "",
+    dateOfBirth: new Date().toISOString(),
     gender: "",
     address: "",
+    phone: "",
     permissions: [] as string[],
     customer_types: [] as string[],
   });
@@ -68,11 +70,13 @@ export default function UsersPage() {
   const handleEdit = (user: User) => {
     setEditingUser(user);
     setFormData({
+      email: user.email || "",
       username: user.username,
       fullName: user.fullName || "",
-      dob: user.dob || new Date().toISOString().split("T")[0],
+      dateOfBirth: user.dateOfBirth || new Date().toISOString(),
       gender: user.gender || "male",
       address: user.address || "",
+      phone: user.phone || "",
       permissions: user.permissions || [],
       customer_types: user.customer_types || [],
     });
@@ -82,40 +86,50 @@ export default function UsersPage() {
   const handleCreate = () => {
     setEditingUser(null);
     setFormData({
+      email: "",
       username: "",
       fullName: "",
-      dob: "",
+      dateOfBirth: new Date().toISOString(),
       gender: "",
       address: "",
+      phone: "",
       permissions: [],
       customer_types: [],
     });
     setIsDialogOpen(true);
   };
-
+  console.log("formData", formData);
   const handleSave = async () => {
     try {
       if (editingUser) {
         const convertData = {
+          email: formData.email,
           fullName: formData.fullName || "",
           address: formData.address || "",
-          dateOfBirth: formData.dob || new Date().toISOString().split("T")[0],
+          dateOfBirth: new Date(formData.dateOfBirth).toISOString(),
           gender: formData.gender || "male",
+          phone: formData.phone || "",
         };
         await userApi.updateProfileById(editingUser.id, convertData);
-        setUsers((prev) =>
-          prev.map((user) =>
-            user.id === editingUser.id ? { ...user, ...formData } : user
-          )
-        );
+        loadUsers(); // Reload users after creation
         toast({
           title: "Success",
           description: "User updated successfully",
         });
       } else {
         // Create new user
-        const newUser = await userApi.createUser(formData);
-        setUsers((prev) => [...prev, newUser]);
+        const convertData = {
+          email: formData.email,
+          username: formData.username,
+          fullName: formData.fullName || "",
+          address: formData.address || "",
+          dateOfBirth: new Date(formData.dateOfBirth).toISOString(),
+          gender: formData.gender || "male",
+          phone: formData.phone || "",
+          password: formData.username,
+        };
+        await userApi.createUser(convertData);
+        loadUsers();
         toast({
           title: "Success",
           description: "User created successfully",
@@ -271,10 +285,24 @@ export default function UsersPage() {
             <div className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor="username">Username</Label>
                   <Input
                     id="username"
                     value={formData.username}
+                    disabled={!!editingUser}
                     onChange={(e) =>
                       setFormData((prev) => ({
                         ...prev,
@@ -283,6 +311,9 @@ export default function UsersPage() {
                     }
                   />
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="fullName">Full Name</Label>
                   <Input
@@ -296,20 +327,23 @@ export default function UsersPage() {
                     }
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="dob">Date of Birth</Label>
                   <Input
                     id="dob"
                     type="date"
-                    value={formData.dob}
+                    value={formData.dateOfBirth.split("T")[0]}
                     onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, dob: e.target.value }))
+                      setFormData((prev) => ({
+                        ...prev,
+                        dateOfBirth: new Date(e.target.value).toISOString(),
+                      }))
                     }
                   />
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="gender">Gender</Label>
                   <Select
@@ -327,6 +361,19 @@ export default function UsersPage() {
                       <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone</Label>
+                  <Input
+                    id="phone"
+                    value={formData.phone}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        phone: e.target.value,
+                      }))
+                    }
+                  />
                 </div>
               </div>
 

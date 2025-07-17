@@ -75,7 +75,10 @@ export function EnhancedChatInput({
         if (quickReply) {
           // Replace variables with mock data
           return quickReply.message
-            .replace(/#FIRST_NAME/g, selectedCustomer?.first_name || "Customer")
+            .replace(
+              /#FIRST_NAME/g,
+              selectedCustomer?.facebookName || "Customer"
+            )
             .replace(/#PAGE_NAME/g, "VPBank Official");
         }
       }
@@ -112,7 +115,10 @@ export function EnhancedChatInput({
         const quickReply = getQuickReplyByShortcut(lastWord);
         if (quickReply) {
           const expandedMessage = quickReply.message
-            .replace(/#FIRST_NAME/g, "Customer")
+            .replace(
+              /#FIRST_NAME/g,
+              selectedCustomer?.facebookName || "Customer"
+            )
             .replace(/#PAGE_NAME/g, "VPBank Official");
           const newInput =
             [...words.slice(0, -1), expandedMessage].join(" ") + " ";
@@ -130,7 +136,7 @@ export function EnhancedChatInput({
     const quickReply = getQuickReplyByShortcut(shortcut);
     if (quickReply) {
       const expandedMessage = quickReply.message
-        .replace(/#FIRST_NAME/g, "Customer")
+        .replace(/#FIRST_NAME/g, selectedCustomer?.facebookName || "Customer")
         .replace(/#PAGE_NAME/g, "VPBank Official");
       words[lastWordIndex] = expandedMessage;
       setInput(words.join(" ") + " ");

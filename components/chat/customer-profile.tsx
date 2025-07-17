@@ -9,7 +9,7 @@ import { X, User, Calendar, Link, Database } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 interface CustomerProfileProps {
-  customer: Customer;
+  customer;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -46,17 +46,21 @@ export function CustomerProfile({
           <CardContent className="space-y-4">
             <div className="flex flex-col items-center">
               <Avatar className="h-16 w-16 mb-3">
-                <AvatarImage src={customer.fb_avt || "/placeholder.svg"} />
+                <AvatarImage
+                  src={customer?.facebookAvatarUrl || "/placeholder.svg"}
+                />
                 <AvatarFallback>
-                  {customer.fb_name
+                  {customer.facebookName
                     .split(" ")
                     .map((n) => n[0])
                     .join("")}
                 </AvatarFallback>
               </Avatar>
-              <h3 className="font-semibold text-center">{customer.fb_name}</h3>
+              <h3 className="font-semibold text-center">
+                {customer.facebookName}
+              </h3>
               <Badge variant="outline" className="mt-1">
-                {customer.customer_type || "Unknown"}
+                {customer.customerType || "Unknown"}
               </Badge>
             </div>
 
@@ -64,16 +68,25 @@ export function CustomerProfile({
               <div>
                 <p className="text-sm font-medium text-gray-500">Facebook ID</p>
                 <p className="text-sm text-gray-900 font-mono">
-                  {customer.fb_id}
+                  {customer.facebookId}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-500">Email</p>
+                <p className="text-sm text-gray-900 font-mono">
+                  {customer.email}
                 </p>
               </div>
 
-              {customer.fb_dob && (
+              {customer.facebookDateOfBirth && (
                 <div>
                   <p className="text-sm font-medium text-gray-500">
                     Date of Birth
                   </p>
-                  <p className="text-sm text-gray-900">{customer.fb_dob}</p>
+                  <p className="text-sm text-gray-900">
+                    {customer.facebookDateOfBirth ||
+                      new Date().toString().split("T")[0]}
+                  </p>
                 </div>
               )}
             </div>
@@ -81,7 +94,7 @@ export function CustomerProfile({
         </Card>
 
         {/* Database Link */}
-        {customer.db_link && (
+        {customer?.db_link && (
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center">
@@ -120,18 +133,20 @@ export function CustomerProfile({
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Last Message</span>
                 <span className="font-medium">
-                  {formatDistanceToNow(new Date(), { addSuffix: true })}
+                  {formatDistanceToNow(new Date(customer?.lastInteractionAt), {
+                    addSuffix: true,
+                  })}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Total Messages</span>
-                <span className="font-medium">24</span>
+                <span className="font-medium">{customer?.totalMessages}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">First Contact</span>
                 <span className="font-medium">
                   {formatDistanceToNow(
-                    new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+                    new Date(customer?.firstContactAt || new Date()),
                     { addSuffix: true }
                   )}
                 </span>

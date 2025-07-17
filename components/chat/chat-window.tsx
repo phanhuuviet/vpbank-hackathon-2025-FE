@@ -11,10 +11,11 @@ import { Info, Bot, User } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 import { EnhancedChatInput } from "./enhanced-chat-input";
+import { useAuth } from "@/contexts/auth-context";
 
 interface ChatWindowProps {
-  conversation: Conversation;
-  messages: Message[];
+  conversation;
+  messages;
   onSendMessage: (content: string) => void;
   onShowCustomerProfile: () => void;
   selectedCustomer;
@@ -27,6 +28,8 @@ export function ChatWindow({
   onShowCustomerProfile,
   selectedCustomer,
 }: ChatWindowProps) {
+  const { user } = useAuth();
+
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -61,10 +64,12 @@ export function ChatWindow({
           <div className="flex items-center space-x-3">
             <Avatar className="h-10 w-10">
               <AvatarImage
-                src={conversation.customerObject.fb_avt || "/placeholder.svg"}
+                src={
+                  conversation.customer?.facebookAvatarUrl || "/placeholder.svg"
+                }
               />
               <AvatarFallback>
-                {conversation.customerObject.fb_name
+                {conversation?.customer?.facebookName
                   .split(" ")
                   .map((n) => n[0])
                   .join("")}
@@ -72,14 +77,14 @@ export function ChatWindow({
             </Avatar>
             <div>
               <h3 className="font-semibold text-gray-900">
-                {conversation.customerObject.fb_name}
+                {conversation.customer.facebookName}
               </h3>
               <div className="flex items-center space-x-2">
                 <Badge variant="outline" className="text-xs">
-                  {conversation.customerObject.customer_type || "Unknown"}
+                  {conversation.customer.customerType || "Unknown"}
                 </Badge>
                 <span className="text-xs text-gray-500">
-                  ID: {conversation.customerObject.fb_id}
+                  ID: {conversation.customer.facebookId}
                 </span>
               </div>
             </div>
@@ -94,20 +99,25 @@ export function ChatWindow({
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => {
-          const isBot = message.sender_type === "bot";
-          const isUser =
-            message.sender_type === "user" &&
-            message.sender_id !== "reviewer_1";
+          const isBot = message.senderType === "bot";
+          const isCustomer = message.senderType === "customer";
+          const isReviewer =
+            message.senderType === "reviewer" && message?.senderId === user?.id;
+
+          const alignRight = isReviewer; // reviewer thì align phải
+          const showLeftAvatar = !alignRight; // bot hoặc customer => avatar trái
+          const showRightAvatar = alignRight;
 
           return (
             <div
               key={message.id}
               className={cn(
                 "flex items-start space-x-2",
-                !isUser && !isBot && "justify-end"
+                alignRight ? "justify-end" : "justify-start"
               )}
             >
-              {(isUser || isBot) && (
+              {/* Avatar bên trái */}
+              {showLeftAvatar && (
                 <Avatar className="h-8 w-8">
                   {isBot ? (
                     <div className="h-full w-full bg-blue-100 flex items-center justify-center">
@@ -117,7 +127,7 @@ export function ChatWindow({
                     <>
                       <AvatarImage
                         src={
-                          conversation.customerObject.fb_avt ||
+                          conversation?.customer?.facebookAvatarUrl ||
                           "/placeholder.svg"
                         }
                       />
@@ -129,12 +139,13 @@ export function ChatWindow({
                 </Avatar>
               )}
 
+              {/* Tin nhắn */}
               <div
                 className={cn(
                   "max-w-xs lg:max-w-md px-4 py-2 rounded-lg",
                   isBot && "bg-gray-100 text-gray-900",
-                  isUser && "bg-blue-100 text-blue-900",
-                  !isUser && !isBot && "bg-green-500 text-white"
+                  isReviewer && "bg-blue-100 text-blue-900",
+                  isCustomer && "bg-green-500 text-white"
                 )}
               >
                 <p className="text-sm">{message.content}</p>
@@ -142,8 +153,8 @@ export function ChatWindow({
                   className={cn(
                     "text-xs mt-1",
                     isBot && "text-gray-500",
-                    isUser && "text-blue-600",
-                    !isUser && !isBot && "text-green-100"
+                    isReviewer && "text-blue-600",
+                    isCustomer && "text-green-100"
                   )}
                 >
                   {formatDistanceToNow(new Date(message.createdAt), {
@@ -152,11 +163,13 @@ export function ChatWindow({
                 </p>
               </div>
 
-              {!isUser && !isBot && (
+              {/* Avatar bên phải (chỉ cho reviewer) */}
+              {showRightAvatar && (
                 <Avatar className="h-8 w-8">
-                  <div className="h-full w-full bg-green-100 flex items-center justify-center">
-                    <User className="h-4 w-4 text-green-600" />
-                  </div>
+                  <AvatarImage src={user?.avt || "/placeholder.svg"} />
+                  <AvatarFallback>
+                    <User className="h-4 w-4" />
+                  </AvatarFallback>
                 </Avatar>
               )}
             </div>
@@ -169,9 +182,9 @@ export function ChatWindow({
       <div className="p-4 border-t bg-white">
         <EnhancedChatInput
           onSendMessage={onSendMessage}
-          onAddNote={() => {}} // Add note functionality if needed
+          onAddNote={() => {}}
           disabled={false}
-          selectedCustomer
+          selectedCustomer={selectedCustomer}
         />
       </div>
     </div>

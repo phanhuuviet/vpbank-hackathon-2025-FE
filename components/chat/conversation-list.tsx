@@ -11,9 +11,9 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface ConversationListProps {
-  conversations: Conversation[];
-  selectedConversation: Conversation | null;
-  onConversationSelect: (conversation: Conversation) => void;
+  conversations;
+  selectedConversation;
+  onConversationSelect: (conversation) => void;
   loading: boolean;
   isConnected: boolean;
 }
@@ -28,7 +28,7 @@ export function ConversationList({
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredConversations = conversations.filter((conversation) =>
-    conversation.customerObject.fb_name
+    conversation.customer.facebookName
       .toLowerCase()
       .includes(searchQuery.toLowerCase())
   );
@@ -118,11 +118,12 @@ export function ConversationList({
                   <Avatar className="h-10 w-10 flex-shrink-0">
                     <AvatarImage
                       src={
-                        conversation.customerObject.fb_avt || "/placeholder.svg"
+                        conversation.customer.facebookAvatarUrl ||
+                        "/placeholder.svg"
                       }
                     />
                     <AvatarFallback className="text-xs">
-                      {conversation.customerObject.fb_name
+                      {conversation.customer.facebookName
                         .split(" ")
                         .map((n) => n[0])
                         .join("")}
@@ -131,7 +132,7 @@ export function ConversationList({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
                       <h3 className="font-medium text-gray-900 truncate text-sm pr-2">
-                        {conversation.customerObject.fb_name}
+                        {conversation.customer.facebookName}
                       </h3>
                       <span className="text-xs text-gray-500 flex-shrink-0">
                         {formatDistanceToNow(new Date(conversation.updatedAt), {
@@ -144,11 +145,11 @@ export function ConversationList({
                     </p>
                     <div className="flex items-center justify-between">
                       <Badge variant="outline" className="text-xs">
-                        {conversation.customerObject.customer_type || "Unknown"}
+                        {conversation.customer.customerType || "Unknown"}
                       </Badge>
                       {conversation.unreadCount > 0 && (
                         <Badge variant="default" className="text-xs">
-                          {conversation.unreadCount}
+                          {conversation?.unreadCount}
                         </Badge>
                       )}
                     </div>

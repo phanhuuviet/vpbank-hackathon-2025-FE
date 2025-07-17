@@ -265,40 +265,35 @@ export const userApi = {
 
 // Chat API
 export const chatApi = {
-  getListConversation: async (): Promise<Conversation[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return mockConversations;
+  getListConversation: async () => {
+    const response = await api.get("/conversations");
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch conversations");
+    }
+    return response.data.data.conversations;
   },
 
-  getListMessages: async (conversationId: string): Promise<Message[]> => {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    return mockMessages.filter((m) => m.conversation_id === conversationId);
+  getListMessages: async (conversationId: string) => {
+    const response = await api.get(`/conversations/${conversationId}/messages`);
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch messages");
+    }
+    return response.data.data.messages;
   },
 
-  getProfileCustomer: async (customerId: string): Promise<Customer> => {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    const conversation = mockConversations.find(
-      (c) => c.customerObject.id === customerId
-    );
-    if (!conversation) throw new Error("Customer not found");
-
-    return {
-      id: conversation.customerObject.id,
-      fb_id: conversation.customerObject.fb_id,
-      fb_name: conversation.customerObject.fb_name,
-      fb_avt: conversation.customerObject.fb_avt,
-      fb_dob: "1990-01-01",
-      db_link: "https://database.vpbank.com/customer/" + customerId,
-      customer_type: conversation.customerObject.customer_type,
-    };
+  getProfileCustomer: async (customerId: string) => {
+    const response = await api.get(`/customers/${customerId}`);
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch customer profile");
+    }
+    return response.data.data;
   },
 
-  getConversationById: async (
-    conversationId: string
-  ): Promise<Conversation> => {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    const conversation = mockConversations.find((c) => c.id === conversationId);
-    if (!conversation) throw new Error("Conversation not found");
-    return conversation;
+  getConversationById: async (conversationId: string) => {
+    const response = await api.get(`/conversations/${conversationId}`);
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch conversation");
+    }
+    return response.data.data;
   },
 };

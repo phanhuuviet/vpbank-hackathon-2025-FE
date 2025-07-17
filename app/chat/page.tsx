@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSocket } from "@/contexts/socket-context";
 import { ConversationList } from "@/components/chat/conversation-list";
 import { ChatWindow } from "@/components/chat/chat-window";
@@ -11,114 +11,125 @@ import { useAuth } from "@/contexts/auth-context";
 
 export default function ChatPage() {
   const { user } = useAuth();
-
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selectedConversation, setSelectedConversation] =
-    useState<Conversation | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
-    null
-  );
-  const [showCustomerProfile, setShowCustomerProfile] = useState(false);
-  const [loading, setLoading] = useState(true);
   const { socket, isConnected } = useSocket();
 
+  const [conversations, setConversations] = useState([]);
+  const conversationsRef = useRef([]);
+  const [selectedConversation, setSelectedConversation] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [showCustomerProfile, setShowCustomerProfile] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Always keep ref in sync with state
   useEffect(() => {
+    conversationsRef.current = conversations;
+  }, [conversations]);
+
+  // Load initial conversations
+  useEffect(() => {
+    const loadConversations = async () => {
+      try {
+        setLoading(true);
+        const data = await chatApi.getListConversation();
+        setConversations(data);
+      } catch (error) {
+        console.error("Failed to load conversations:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadConversations();
   }, []);
 
-  const handleReceiveMessage = async (message) => {
-    if (message.conversation_id === selectedConversation?.id) {
-      setMessages((prev) => [...prev, message]);
-    }
-
-    const exists = conversations.find((c) => c.id === message.conversation_id);
-    if (!exists) {
-      try {
-        const newConv = await chatApi.getConversationById(
-          message.conversation_id
-        );
-        setConversations((prev) => [newConv, ...prev]);
-      } catch (err) {
-        console.error("Failed to fetch new conversation", err);
-      }
-    } else {
-      setConversations((prev) => {
-        const updated = prev.map((conv) =>
-          conv.id === message.conversation_id
-            ? {
-                ...conv,
-                lastMessage: message.content,
-                updatedAt: new Date().toISOString(),
-              }
-            : conv
-        );
-        return updated.sort(
-          (a, b) =>
-            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-        );
-      });
-    }
-  };
-
+  // Handle socket incoming messages
   useEffect(() => {
-    if (socket) {
-      socket.on("receive_mess", (message: Message) => {
-        handleReceiveMessage(message);
-      });
+    if (!socket) return;
 
-      return () => {
-        socket.off("receive_mess");
-      };
-    }
-  }, [socket]);
+    const handleReceiveMessage = async (message) => {
+      // Update messages if in current conversation
+      if (message.conversationId === selectedConversation?.id) {
+        setMessages((prev) => [...prev, message]);
+      }
 
-  const loadConversations = async () => {
-    try {
-      setLoading(true);
-      const data = await chatApi.getListConversation();
-      setConversations(data);
-    } catch (error) {
-      console.error("Failed to load conversations:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      // Check if conversation already exists
+      const exists = conversationsRef.current.find(
+        (c) => c.id === message.conversationId
+      );
 
-  const handleConversationSelect = async (conversation: Conversation) => {
+      if (!exists) {
+        try {
+          const newConv = await chatApi.getConversationById(
+            message.conversationId
+          );
+          setConversations((prev) => [newConv, ...prev]);
+        } catch (err) {
+          console.error("❌ Failed to fetch new conversation", err);
+        }
+      } else {
+        // Update existing conversation with new message
+        setConversations((prev) => {
+          const updated = prev.map((conv) =>
+            conv.id === message.conversationId
+              ? {
+                  ...conv,
+                  lastMessage: message.content,
+                  updatedAt: new Date().toISOString(),
+                }
+              : conv
+          );
+          return updated.sort(
+            (a, b) =>
+              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          );
+        });
+      }
+    };
+
+    socket.on("receive_message", handleReceiveMessage);
+
+    return () => {
+      socket.off("receive_message", handleReceiveMessage);
+    };
+  }, [socket, selectedConversation]);
+
+  const handleConversationSelect = async (conversation) => {
     setSelectedConversation(conversation);
+    setSelectedCustomer(conversation.customer);
     try {
       const messagesData = await chatApi.getListMessages(conversation.id);
       setMessages(messagesData);
     } catch (error) {
-      console.error("Failed to load messages:", error);
+      console.error("❌ Failed to load messages:", error);
     }
   };
 
   const handleSendMessage = async (content: string) => {
-    if (!selectedConversation || !socket) return;
+    if (!selectedConversation || !socket || !user) return;
 
     const messageData = {
       conversation_id: selectedConversation.id,
-      sender_id: user.id, // This should come from auth context
+      sender_id: user.id,
       content,
     };
 
+    // Emit to socket server
     socket.emit("send_mess", messageData);
 
-    // Optimistically add message to UI
-    const newMessage: Message = {
+    // Optimistically update UI
+    const newMessage = {
       id: Date.now().toString(),
-      sender_id: user.id,
-      sender_type: "user",
+      senderId: user.id,
+      senderType: "reviewer",
       content,
-      conversation_id: selectedConversation.id,
+      conversationId: selectedConversation.id,
       createdAt: new Date().toISOString(),
     };
 
     setMessages((prev) => [...prev, newMessage]);
 
-    // Cập nhật UI: hội thoại
+    // Update conversation list preview
     setConversations((prev) => {
       const updated = prev.map((conv) =>
         conv.id === selectedConversation.id
@@ -142,13 +153,13 @@ export default function ChatPage() {
       setSelectedCustomer(customerData);
       setShowCustomerProfile(true);
     } catch (error) {
-      console.error("Failed to load customer profile:", error);
+      console.error("❌ Failed to load customer profile:", error);
     }
   };
 
   return (
     <div className="h-full bg-white flex overflow-hidden">
-      {/* Conversation List */}
+      {/* Sidebar - Conversation List */}
       <div className="w-80 border-r bg-gray-50 flex-shrink-0">
         <ConversationList
           conversations={conversations}
@@ -159,7 +170,7 @@ export default function ChatPage() {
         />
       </div>
 
-      {/* Chat Window */}
+      {/* Main Chat Window */}
       <div className="flex-1 flex flex-col min-w-0">
         {selectedConversation ? (
           <ChatWindow
@@ -167,7 +178,7 @@ export default function ChatPage() {
             messages={messages}
             onSendMessage={handleSendMessage}
             onShowCustomerProfile={() =>
-              handleShowCustomerProfile(selectedConversation.customerObject.id)
+              handleShowCustomerProfile(selectedConversation.customerId)
             }
             selectedCustomer={selectedCustomer}
           />
@@ -185,7 +196,7 @@ export default function ChatPage() {
         )}
       </div>
 
-      {/* Customer Profile Sidebar */}
+      {/* Sidebar - Customer Profile */}
       {showCustomerProfile && selectedCustomer && (
         <div className="flex-shrink-0">
           <CustomerProfile

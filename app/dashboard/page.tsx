@@ -197,7 +197,7 @@ export default function DashboardPage() {
       path: "/knowledge-base",
     },
   ];
-  console.log("user", user);
+
   const availableActions = quickActions.filter((action) =>
     user?.permissions.includes(action.permission)
   );

@@ -36,7 +36,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
 
     // Chỉ khởi tạo socket nếu chưa có
     if (!socketRef.current) {
-      const socket = io("http://localhost:3001", {
+      const socket = io(process.env.NEXT_PUBLIC_REACT_SOCKET_URL, {
         auth: {
           user_id: user.id,
           username: user.username,
